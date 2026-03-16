@@ -1,5 +1,6 @@
 ﻿@page "/"
 @page "/chat"
+@using Microsoft.Extensions.AI
 
 <PageTitle>Home</PageTitle>
 <ChatMessageWrapper>
@@ -11,10 +12,21 @@
 @code {
 
     bool isLoading = false;
+    private IChatClient ai;
+    public Chat(IChatClient client)
+    {
+        ai = client;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        // Logic to handle the sent message
+        // Initialize the chat client or any other necessary services
+        ChatMessage systemMessage = new ChatMessage(
+            ChatRole.System, 
+            "You are a helpful assistant.");
+   
+        ChatResponse response = await ai.GetResponseAsync(systemMessage);
         isLoading = false;
     }
 
