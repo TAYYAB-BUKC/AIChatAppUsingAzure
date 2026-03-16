@@ -34,6 +34,12 @@
     {
         isLoading = true;
         // Logic to handle the sent message
+        ChatMessage userMessage = new ChatMessage(ChatRole.User, message);
+        ChatResponse chatResponse = await ai.GetResponseAsync(userMessage);
+        foreach (var msg in chatResponse.Messages)
+        {
+            System.Console.WriteLine($"{msg.Role}: {msg.Text}");
+        }
         isLoading = false;
     }
 
