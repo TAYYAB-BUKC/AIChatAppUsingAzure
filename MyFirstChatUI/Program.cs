@@ -1,6 +1,9 @@
-// dotnet add package Azure.AI.OpenAI
+﻿// dotnet add package Azure.AI.OpenAI
 // dotnet add package Microsoft.Extensions.AI
 // dotnet add package Microsoft.Extensions.AI.OpenAI
+using Azure;
+using Azure.AI.OpenAI;
+using Microsoft.Extensions.AI;
 using MyFirstChatUI.Components;
 using MyFirstChatUI.Models;
 
@@ -15,6 +18,19 @@ builder.Services.AddRazorComponents()
 		options.DetailedErrors = builder.Environment.IsDevelopment();
 	}
 );
+
+var endpoint = builder.Configuration["Chat:AI:Endpoint"] ?? throw new InvalidOperationException("Missing configuration: Endpoint. See the README for details.");
+var apikey = builder.Configuration["Chat:AI:ApiKey"] ?? throw new InvalidOperationException("Missing configuration: ApiKey. See the README for details.");
+
+var model = "gpt-4o-mini";
+
+var client = new AzureOpenAIClient(
+	new Uri(endpoint),
+	new AzureKeyCredential(apikey)
+);
+
+IChatClient innerClient = client.GetChatClient(model).AsIChatClient();
+builder.Services.AddChatClient(innerClient);
 
 // Register CoffeeData service
 builder.Services.AddScoped<CoffeeData>();
