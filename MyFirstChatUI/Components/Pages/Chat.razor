@@ -4,6 +4,33 @@
 
 <PageTitle>Home</PageTitle>
 <ChatMessageWrapper>
+    @foreach (var message in history)
+    {
+        if (message.Role == ChatRole.Assistant)
+        {
+            @foreach (var content in message.Contents)
+            {
+                if (content is TextContent textContent)
+                {
+                    <AssistantMessage>
+                        <MarkdownText Text="@message.Text" />
+                    </AssistantMessage>
+                }
+            }
+        }
+        if (message.Role == ChatRole.User)
+        {
+            @foreach (var content in message.Contents)
+            {
+                if (content is TextContent textContent)
+                {
+                    <UserMessage>
+                        <p>@message.Text</p>
+                    </UserMessage>
+                }
+            }
+        }
+    }
     <LoadingIndicator IsLoading="@isLoading" StreamingText="" />
 </ChatMessageWrapper>
 <ChatInput OnSendMessage="HandleSendMessage" 
