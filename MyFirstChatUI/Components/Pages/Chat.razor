@@ -13,6 +13,8 @@
 
     bool isLoading = false;
     private IChatClient ai;
+    List<ChatMessage> history = [];
+
     public Chat(IChatClient client)
     {
         ai = client;
@@ -26,7 +28,9 @@
             ChatRole.System, 
             "You are a helpful assistant.");
    
+        history.Add(systemMessage);
         ChatResponse response = await ai.GetResponseAsync(systemMessage);
+        history.AddMessages(response);
         isLoading = false;
     }
 
@@ -35,11 +39,9 @@
         isLoading = true;
         // Logic to handle the sent message
         ChatMessage userMessage = new ChatMessage(ChatRole.User, message);
-        ChatResponse chatResponse = await ai.GetResponseAsync(userMessage);
-        foreach (var msg in chatResponse.Messages)
-        {
-            System.Console.WriteLine($"{msg.Role}: {msg.Text}");
-        }
+        history.Add(userMessage);
+        ChatResponse chatResponse = await ai.GetResponseAsync(history);
+        history.AddMessages(chatResponse);
         isLoading = false;
     }
 
