@@ -37,7 +37,7 @@
             }
         }
     }
-    <LoadingIndicator IsLoading="@isLoading" StreamingText="" />
+    <LoadingIndicator IsLoading="@isLoading" StreamingText="@streamingText" />
 </ChatMessageWrapper>
 <ChatInput OnSendMessage="HandleSendMessage" 
     IsLoading="@isLoading" OnFileAttachment="GetFileData" />
@@ -47,6 +47,7 @@
     bool isLoading = false;
     private IChatClient ai;
     List<ChatMessage> history = [];
+    string streamingText = string.Empty;
 
     public Chat(IChatClient client)
     {
@@ -73,8 +74,18 @@
         // Logic to handle the sent message
         ChatMessage userMessage = new ChatMessage(ChatRole.User, message);
         history.Add(userMessage);
-        ChatResponse chatResponse = await ai.GetResponseAsync(history);
-        history.AddMessages(chatResponse);
+        var responseText = new TextContent("");
+        var currentResponseMessage = new ChatMessage(ChatRole.Assistant, [responseText]);
+
+        await foreach (var chunk in ai.GetStreamingResponseAsync(history))
+        {
+            history.AddMessages(chunk, filter: c => c is not TextContent);
+            responseText.Text += chunk.Text;
+            streamingText += chunk.Text;
+            StateHasChanged();
+            await Task.Delay(1);
+        }
+        history.Add(currentResponseMessage);
         isLoading = false;
     }
 
