@@ -77,6 +77,7 @@
         ChatMessage imageMessage = new ChatMessage() { Role = ChatRole.User };
         DataContent dataContent = new DataContent(imageBytes, mediaType);
         imageMessage.Contents.Add(dataContent);
+        history.Add(imageMessage);
     }
 
     private async Task GetFileData(InputFileChangeEventArgs e)
