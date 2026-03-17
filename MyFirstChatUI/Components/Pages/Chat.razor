@@ -28,6 +28,12 @@
                         <p>@message.Text</p>
                     </UserMessage>
                 }
+                if (content is DataContent dataContent)
+                {
+                    <UserMessage>
+                        <img src="data:@dataContent.MediaType;base64,@dataContent.Base64Data" alt="image"/>
+                    </UserMessage>
+                }
             }
         }
     }
