@@ -30,7 +30,7 @@ var client = new AzureOpenAIClient(
 );
 
 IChatClient innerClient = client.GetChatClient(model).AsIChatClient();
-builder.Services.AddChatClient(innerClient);
+builder.Services.AddChatClient(innerClient).UseLogging();
 
 // Register CoffeeData service
 builder.Services.AddScoped<CoffeeData>();
