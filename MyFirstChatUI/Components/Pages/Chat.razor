@@ -28,13 +28,19 @@
                         <p>@message.Text</p>
                     </UserMessage>
                 }
+                if (content is DataContent dataContent)
+                {
+                    <UserMessage>
+                        <img src="data:@dataContent.MediaType;base64,@dataContent.Base64Data" alt="image"/>
+                    </UserMessage>
+                }
             }
         }
     }
     <LoadingIndicator IsLoading="@isLoading" StreamingText="" />
 </ChatMessageWrapper>
 <ChatInput OnSendMessage="HandleSendMessage" 
-    IsLoading="@isLoading" />
+    IsLoading="@isLoading" OnFileAttachment="GetFileData" />
 
 @code {
 
@@ -72,9 +78,12 @@
         isLoading = false;
     }
 
-    @* private void HandleSendImage(byte[] imageBytes, string mediaType)
+    private void HandleSendImage(byte[] imageBytes, string mediaType)
     {
-
+        ChatMessage imageMessage = new ChatMessage() { Role = ChatRole.User };
+        DataContent dataContent = new DataContent(imageBytes, mediaType);
+        imageMessage.Contents.Add(dataContent);
+        history.Add(imageMessage);
     }
 
     private async Task GetFileData(InputFileChangeEventArgs e)
@@ -94,5 +103,5 @@
 
         HandleSendImage(imgBytes, file.ContentType);
         isLoading = false;
-    } *@
+    }
 }
