@@ -34,7 +34,7 @@
     <LoadingIndicator IsLoading="@isLoading" StreamingText="" />
 </ChatMessageWrapper>
 <ChatInput OnSendMessage="HandleSendMessage" 
-    IsLoading="@isLoading" />
+    IsLoading="@isLoading" OnFileAttachment="GetFileData" />
 
 @code {
 
@@ -74,7 +74,9 @@
 
     private void HandleSendImage(byte[] imageBytes, string mediaType)
     {
-
+        ChatMessage imageMessage = new ChatMessage() { Role = ChatRole.User };
+        DataContent dataContent = new DataContent(imageBytes, mediaType);
+        imageMessage.Contents.Add(dataContent);
     }
 
     private async Task GetFileData(InputFileChangeEventArgs e)
