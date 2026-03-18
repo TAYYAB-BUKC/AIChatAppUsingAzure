@@ -1,4 +1,5 @@
 ﻿@page "/agent"
+@using Microsoft.Extensions.AI
 @using MyFirstChatUI.Components.Listing
 @using MyFirstChatUI.Models
 @inject CoffeeData CoffeeDataService
@@ -18,12 +19,16 @@
     private bool isLoading = false;
     private List<CardData> Cards = [];
 
+    private IChatClient ai;
+    public BasicAgent(IChatClient client)
+    {
+        ai = client;
+    }
+
     private async Task LoadData()
     {
         isLoading = true;
-        StateHasChanged();
-        
+        ChatMessage systemMessage = new(ChatRole.System, agentPrompt);
         isLoading = false;
     }
-
 }
