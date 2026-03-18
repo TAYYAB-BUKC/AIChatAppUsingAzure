@@ -29,6 +29,20 @@
     {
         isLoading = true;
         ChatMessage systemMessage = new(ChatRole.System, agentPrompt);
+        var markdownContents = await CoffeeDataService.ReadMarkdownFilesAsync();
+
+        foreach (var content in markdownContents)
+        {
+            ChatMessage userMessage = new(ChatRole.User, content);
+            var response = await ai.GetResponseAsync<CardData>([systemMessage, userMessage]);
+            response.TryGetResult(out CardData? result);
+
+            if (result is CardData { Description: not null })
+            {
+                Cards.Add(result);
+                StateHasChanged();
+            }
+        }
         isLoading = false;
     }
 }
