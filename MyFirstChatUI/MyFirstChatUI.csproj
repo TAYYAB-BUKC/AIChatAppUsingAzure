@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Agents\" />
     <Folder Include="Components\Shared\" />
   </ItemGroup>
 
