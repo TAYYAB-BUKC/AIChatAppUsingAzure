@@ -34,6 +34,7 @@ builder.Services.AddChatClient(innerClient).UseLogging();
 
 // Register CoffeeData service
 builder.Services.AddScoped<CoffeeData>();
+builder.Services.AddSingleton(client);
 
 var app = builder.Build();
 
