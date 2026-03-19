@@ -39,7 +39,9 @@ namespace MyFirstChatUI.Agents
 		// Static factory method for async initialization
 		public static async Task<CoffeeFileAgent> CreateAsync(AzureOpenAIClient azureOpenAIClient, CoffeeData coffeeDataService)
 		{
-			return new CoffeeFileAgent(azureOpenAIClient, coffeeDataService);
+			var agent = new CoffeeFileAgent(azureOpenAIClient, coffeeDataService);
+			await agent.InitializeAsync();
+			return agent;
 		}
 
 		private async Task InitializeAsync()
@@ -50,6 +52,14 @@ namespace MyFirstChatUI.Agents
 				//  Create a new store
 				vectorStoreId = await CreateNewStore();
 			}
+
+			// Create an Agent
+			string prompt = @"
+				The document store contains the text of coffee descriptions.
+				Always analyze the document store to provide an answer to the user's question.
+				Never rely on your knowledge not included in the document store.
+				Always format response using markdown.
+            ";
 		}
 
 		private async Task<string> CreateNewStore()
