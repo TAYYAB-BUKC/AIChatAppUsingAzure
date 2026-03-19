@@ -35,6 +35,18 @@ namespace MyFirstChatUI.Agents
 		{
 			return new CoffeeFileAgent(azureOpenAIClient, coffeeDataService);
 		}
+		private async Task<string> CreateNewStore()
+		{
+			var store = await storeClient.CreateVectorStoreAsync();
+			if (store?.Value is not { Id: var storeId }) throw new Exception("Store was not created");
+			foreach (string fileName in coffeeDataService.GetMarkdownFileNames())
+			{
+				var fullPath = Path.Combine(coffeeDataService.DataPath, fileName);
+				OpenAIFile fileInfo = await fileClient.UploadFileAsync(fullPath, FileUploadPurpose.Assistants);
+				await storeClient.AddFileToVectorStoreAsync(storeId, fileInfo.Id);
+			}
+			return storeId;
+		}
 	}
 	#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 }
