@@ -6,6 +6,7 @@ using MyFirstChatUI.Models;
 using OpenAI.Assistants;
 using OpenAI.Files;
 using OpenAI.VectorStores;
+using System.Reflection.Metadata;
 
 namespace MyFirstChatUI.Agents
 {
@@ -26,6 +27,9 @@ namespace MyFirstChatUI.Agents
 
 		// The ID of the current vector store used for document search.
 		private string vectorStoreId = null!;
+
+		// The AI chat agent instance used for answering questions about coffee data.
+		public ChatClientAgent Agent { get; private set; } = null!;
 
 		// Private constructor to prevent direct instantiation
 		private CoffeeFileAgent(AzureOpenAIClient azureOpenAIClient, CoffeeData coffeeDataService)
@@ -60,6 +64,31 @@ namespace MyFirstChatUI.Agents
 				Never rely on your knowledge not included in the document store.
 				Always format response using markdown.
             ";
+
+			Agent = await assistantClient.CreateAIAgentAsync(
+					"gpt-4o-mini",
+					name: "Coffee Agent",
+					instructions: prompt,
+					tools: [new HostedFileSearchTool()
+					{
+						Inputs = [new HostedVectorStoreContent(vectorStoreId)]
+					}]);
+
+			//var Agent = await assistantClient.CreateAssistantAsync(
+			//		"gpt-4o-mini",
+			//		new AssistantCreationOptions
+			//		{
+			//			Name = "Coffee Agent",
+			//			Instructions = prompt,
+			//			ToolResources = new ToolResources
+			//			{
+			//				FileSearch = new FileSearchToolResources
+			//				{
+			//					VectorStoreIds = { vectorStoreId }
+			//				}
+			//			}
+			//		}
+			//	);
 		}
 
 		private async Task<string> CreateNewStore()
