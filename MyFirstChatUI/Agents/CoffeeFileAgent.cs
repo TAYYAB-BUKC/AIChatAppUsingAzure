@@ -6,6 +6,7 @@ using OpenAI.VectorStores;
 
 namespace MyFirstChatUI.Agents
 {
+	#pragma warning disable OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 	public class CoffeeFileAgent
 	{
 		// Client for interacting with the OpenAI Assistant API.
@@ -35,4 +36,5 @@ namespace MyFirstChatUI.Agents
 			return new CoffeeFileAgent(azureOpenAIClient, coffeeDataService);
 		}
 	}
+	#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 }
