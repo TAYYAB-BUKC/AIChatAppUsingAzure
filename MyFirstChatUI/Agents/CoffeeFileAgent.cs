@@ -1,4 +1,7 @@
 ﻿using Azure.AI.OpenAI;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.VectorData;
 using MyFirstChatUI.Models;
 using OpenAI.Assistants;
 using OpenAI.Files;
@@ -21,6 +24,9 @@ namespace MyFirstChatUI.Agents
 		// Service for accessing coffee data and file names.
 		private readonly CoffeeData coffeeDataService;
 
+		// The ID of the current vector store used for document search.
+		private string vectorStoreId = null!;
+
 		// Private constructor to prevent direct instantiation
 		private CoffeeFileAgent(AzureOpenAIClient azureOpenAIClient, CoffeeData coffeeDataService)
 		{
@@ -35,6 +41,17 @@ namespace MyFirstChatUI.Agents
 		{
 			return new CoffeeFileAgent(azureOpenAIClient, coffeeDataService);
 		}
+
+		private async Task InitializeAsync()
+		{
+			vectorStoreId = storeClient.GetVectorStores()?.FirstOrDefault()?.Id ?? string.Empty;
+			if (string.IsNullOrEmpty(vectorStoreId))
+			{
+				//  Create a new store
+				vectorStoreId = await CreateNewStore();
+			}
+		}
+
 		private async Task<string> CreateNewStore()
 		{
 			var store = await storeClient.CreateVectorStoreAsync();
