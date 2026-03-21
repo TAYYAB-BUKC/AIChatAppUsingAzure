@@ -1,22 +1,35 @@
 ﻿@page "/coffee-agent"
+@using Azure.AI.OpenAI
+@using MyFirstChatUI.Agents
 @using MyFirstChatUI.Models
 
 @inject CoffeeData CoffeeDataService
+@inject AzureOpenAIClient AzureClient
 
 <PageTitle>Coffee Data</PageTitle>
 
 <ChatMessageWrapper>
-    <LoadingIndicator IsLoading="true" StreamingText="" />
+    <LoadingIndicator IsLoading="isLoading" StreamingText="@streamingText" />
 </ChatMessageWrapper>
 
-<ChatInput OnSendMessage="HandleSendMessage" IsLoading="true" />
+<ChatInput OnSendMessage="HandleSendMessage" IsLoading="isLoading" />
 
 @code {
 #pragma warning disable OPENAI001
-
+    private bool isLoading;
+    string streamingText = string.Empty;
+    private CoffeeFileAgent ai = null!;
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        streamingText = "Loading Coffee Agent...";
+
+        ai = await CoffeeFileAgent.CreateAsync(AzureClient, CoffeeDataService);
+        if (ai is null) throw new InvalidOperationException("Unable to create Agent");
+
+        streamingText = string.Empty;
+        isLoading = false;
     }
 
     public async Task HandleSendMessage(string prompt)
