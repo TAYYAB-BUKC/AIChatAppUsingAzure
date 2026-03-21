@@ -1,5 +1,6 @@
 ﻿@page "/coffee-agent"
 @using Azure.AI.OpenAI
+@using Microsoft.Extensions.AI
 @using MyFirstChatUI.Agents
 @using MyFirstChatUI.Models
 
@@ -19,6 +20,7 @@
     private bool isLoading;
     string streamingText = string.Empty;
     private CoffeeFileAgent ai = null!;
+    private List<ChatMessage> history = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,6 +32,9 @@
 
         streamingText = string.Empty;
         isLoading = false;
+
+        ChatMessage assistantMessage = new ChatMessage(ChatRole.Assistant, "Ask me anything about our coffee selection.");
+        history.Add(assistantMessage);
     }
 
     public async Task HandleSendMessage(string prompt)
