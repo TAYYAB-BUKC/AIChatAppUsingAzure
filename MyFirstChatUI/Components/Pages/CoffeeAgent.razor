@@ -10,6 +10,21 @@
 <PageTitle>Coffee Data</PageTitle>
 
 <ChatMessageWrapper>
+    @foreach (ChatMessage m in history)
+    {
+        if (m.Role == ChatRole.Assistant)
+        {
+            <AssistantMessage>
+                <MarkdownText Text="@m.Text" />
+            </AssistantMessage>
+        }
+        if (m.Role == ChatRole.User)
+        {
+            <UserMessage>
+                <MarkdownText Text="@m.Text" />
+            </UserMessage>
+        }
+    }
     <LoadingIndicator IsLoading="isLoading" StreamingText="@streamingText" />
 </ChatMessageWrapper>
 
