@@ -33,11 +33,12 @@
 <ChatInput OnSendMessage="HandleSendMessage" IsLoading="isLoading" />
 
 @code {
-#pragma warning disable OPENAI001
+    #pragma warning disable OPENAI001
     private bool isLoading;
     string streamingText = string.Empty;
     private CoffeeFileAgent ai = null!;
     private List<ChatMessage> history = [];
+    private AgentSession agentThread = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,7 +61,8 @@
         ChatMessage? message = new ChatMessage(ChatRole.User, prompt);
         history.Add(message);
         List<AIAnnotation> footnotes = [];
-        await foreach (AgentResponseUpdate update in ai.Agent.RunStreamingAsync(message))
+        agentThread ??= await ai.Agent.CreateSessionAsync();
+        await foreach (AgentResponseUpdate update in ai.Agent.RunStreamingAsync(message, agentThread))
         {
             streamingText += ReplaceUnicodeBrackets(update.Text ?? "");
             footnotes.AddRange(update.Contents.SelectMany(content => content.Annotations ?? []));
