@@ -68,6 +68,25 @@
             await Task.Delay(1);
         }
         
+        if (footnotes is { Count: > 0 })
+        {
+            foreach (CitationAnnotation footnote in footnotes.Cast<CitationAnnotation>())
+            {
+                if (footnote.RawRepresentation is TextAnnotationUpdate annotation)
+                {
+                    streamingText += "\r\n";
+                    streamingText += "\r\n";
+                    var fullFileName = footnote?.FileId != null
+                        ? await ai.GetFileNameAsync(footnote.FileId)
+                        : "Unknown";
+                    var displayName = Path.GetFileName(fullFileName);
+                    streamingText += $"{ReplaceUnicodeBrackets(annotation.TextToReplace ?? "")}: {displayName} (Index: {annotation?.StartIndex} - {annotation?.EndIndex})";
+                    StateHasChanged();
+                    await Task.Delay(1);
+                }
+            }
+        }
+
         history.Add(new ChatMessage(ChatRole.Assistant, streamingText));
         streamingText = string.Empty;
         isLoading = false;
