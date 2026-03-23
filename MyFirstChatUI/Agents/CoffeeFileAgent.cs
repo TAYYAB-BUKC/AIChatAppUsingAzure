@@ -103,6 +103,12 @@ namespace MyFirstChatUI.Agents
 			}
 			return storeId;
 		}
+
+		public async Task<string> GetFileNameAsync(string fileId)
+		{
+			var x = await fileClient.GetFileAsync(fileId);
+			return x.Value.Filename;
+		}
 	}
 	#pragma warning restore OPENAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 }
